@@ -62,7 +62,7 @@ void RendererCameraAttributes::camera_attributes_set_dof_blur_bokeh_shape(RS::DO
 	dof_blur_bokeh_shape = p_shape;
 }
 
-void RendererCameraAttributes::camera_attributes_set_dof_blur(RID p_camera_attributes, bool p_far_enable, float p_far_distance, float p_far_transition, bool p_near_enable, float p_near_distance, float p_near_transition, float p_amount) {
+void RendererCameraAttributes::camera_attributes_set_dof_blur(RID p_camera_attributes, bool p_far_enable, float p_far_distance, float p_far_transition, bool p_near_enable, float p_near_distance, float p_near_transition, float p_amount, float p_far_amount, float p_near_amount) {
 	CameraAttributes *cam_attributes = camera_attributes_owner.get_or_null(p_camera_attributes);
 	ERR_FAIL_NULL(cam_attributes);
 #ifdef DEBUG_ENABLED
@@ -79,6 +79,8 @@ void RendererCameraAttributes::camera_attributes_set_dof_blur(RID p_camera_attri
 	cam_attributes->dof_blur_near_transition = p_near_transition;
 
 	cam_attributes->dof_blur_amount = p_amount;
+	cam_attributes->dof_blur_far_amount = p_far_amount;
+	cam_attributes->dof_blur_near_amount = p_near_amount;
 }
 
 bool RendererCameraAttributes::camera_attributes_get_dof_far_enabled(RID p_camera_attributes) {
@@ -121,6 +123,18 @@ float RendererCameraAttributes::camera_attributes_get_dof_blur_amount(RID p_came
 	CameraAttributes *cam_attributes = camera_attributes_owner.get_or_null(p_camera_attributes);
 	ERR_FAIL_NULL_V(cam_attributes, 0.0);
 	return cam_attributes->dof_blur_amount;
+}
+
+float RendererCameraAttributes::camera_attributes_get_dof_blur_far_amount(RID p_camera_attributes) {
+	CameraAttributes *cam_attributes = camera_attributes_owner.get_or_null(p_camera_attributes);
+	ERR_FAIL_NULL_V(cam_attributes, 0.0);
+	return cam_attributes->dof_blur_far_amount;
+}
+
+float RendererCameraAttributes::camera_attributes_get_dof_blur_near_amount(RID p_camera_attributes) {
+	CameraAttributes *cam_attributes = camera_attributes_owner.get_or_null(p_camera_attributes);
+	ERR_FAIL_NULL_V(cam_attributes, 0.0);
+	return cam_attributes->dof_blur_near_amount;
 }
 
 void RendererCameraAttributes::camera_attributes_set_exposure(RID p_camera_attributes, float p_multiplier, float p_exposure_normalization) {

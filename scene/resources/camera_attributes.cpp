@@ -210,6 +210,24 @@ float CameraAttributesPractical::get_dof_blur_amount() const {
 	return dof_blur_amount;
 }
 
+void CameraAttributesPractical::set_dof_blur_far_amount(float p_amount) {
+	dof_blur_far_amount = p_amount;
+	_update_dof_blur();
+}
+
+float CameraAttributesPractical::get_dof_blur_far_amount() const {
+	return dof_blur_far_amount;
+}
+
+void CameraAttributesPractical::set_dof_blur_near_amount(float p_amount) {
+	dof_blur_near_amount = p_amount;
+	_update_dof_blur();
+}
+
+float CameraAttributesPractical::get_dof_blur_near_amount() const {
+	return dof_blur_near_amount;
+}
+
 void CameraAttributesPractical::_update_dof_blur() {
 	RS::get_singleton()->camera_attributes_set_dof_blur(
 			get_rid(),
@@ -219,7 +237,9 @@ void CameraAttributesPractical::_update_dof_blur() {
 			dof_blur_near_enabled,
 			dof_blur_near_distance,
 			dof_blur_near_transition,
-			dof_blur_amount);
+			dof_blur_amount,
+			dof_blur_far_amount,
+			dof_blur_near_amount);
 }
 
 float CameraAttributesPractical::calculate_exposure_normalization() const {
@@ -283,6 +303,10 @@ void CameraAttributesPractical::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_dof_blur_near_transition"), &CameraAttributesPractical::get_dof_blur_near_transition);
 	ClassDB::bind_method(D_METHOD("set_dof_blur_amount", "amount"), &CameraAttributesPractical::set_dof_blur_amount);
 	ClassDB::bind_method(D_METHOD("get_dof_blur_amount"), &CameraAttributesPractical::get_dof_blur_amount);
+	ClassDB::bind_method(D_METHOD("set_dof_blur_far_amount", "amount"), &CameraAttributesPractical::set_dof_blur_far_amount);
+	ClassDB::bind_method(D_METHOD("get_dof_blur_far_amount"), &CameraAttributesPractical::get_dof_blur_far_amount);
+	ClassDB::bind_method(D_METHOD("set_dof_blur_near_amount", "amount"), &CameraAttributesPractical::set_dof_blur_near_amount);
+	ClassDB::bind_method(D_METHOD("get_dof_blur_near_amount"), &CameraAttributesPractical::get_dof_blur_near_amount);
 
 	ClassDB::bind_method(D_METHOD("set_auto_exposure_max_sensitivity", "max_sensitivity"), &CameraAttributesPractical::set_auto_exposure_max_sensitivity);
 	ClassDB::bind_method(D_METHOD("get_auto_exposure_max_sensitivity"), &CameraAttributesPractical::get_auto_exposure_max_sensitivity);
@@ -297,6 +321,8 @@ void CameraAttributesPractical::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dof_blur_near_distance", PROPERTY_HINT_RANGE, "0.01,8192,0.01,exp,suffix:m"), "set_dof_blur_near_distance", "get_dof_blur_near_distance");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dof_blur_near_transition", PROPERTY_HINT_RANGE, "-1,8192,0.01"), "set_dof_blur_near_transition", "get_dof_blur_near_transition");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dof_blur_amount", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_dof_blur_amount", "get_dof_blur_amount");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dof_blur_far_amount", PROPERTY_HINT_RANGE, "-1,1,0.01"), "set_dof_blur_far_amount", "get_dof_blur_far_amount");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dof_blur_near_amount", PROPERTY_HINT_RANGE, "-1,1,0.01"), "set_dof_blur_near_amount", "get_dof_blur_near_amount");
 
 	ADD_GROUP("Auto Exposure", "auto_exposure_");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "auto_exposure_min_sensitivity", PROPERTY_HINT_RANGE, "0,1600,0.01,or_greater,suffic:ISO"), "set_auto_exposure_min_sensitivity", "get_auto_exposure_min_sensitivity");
@@ -415,7 +441,9 @@ void CameraAttributesPhysical::_update_frustum() {
 			use_near,
 			u / 1000.0,
 			-1.0,
-			scale / 5.0); // Arbitrary scaling to get close to how much blur there should be.
+			scale / 5.0, // Arbitrary scaling to get close to how much blur there should be.
+			-1.0,
+			-1.0);
 }
 
 float CameraAttributesPhysical::calculate_exposure_normalization() const {

@@ -102,7 +102,17 @@ void BokehDOF::bokeh_dof_compute(const BokehBuffers &p_buffers, RID p_camera_att
 	bool dof_near = RSG::camera_attributes->camera_attributes_get_dof_near_enabled(p_camera_attributes);
 	float dof_near_begin = RSG::camera_attributes->camera_attributes_get_dof_near_distance(p_camera_attributes);
 	float dof_near_size = RSG::camera_attributes->camera_attributes_get_dof_near_transition(p_camera_attributes);
-	float bokeh_size = RSG::camera_attributes->camera_attributes_get_dof_blur_amount(p_camera_attributes) * 64; // Base 64 pixel radius.
+	float dof_amount = RSG::camera_attributes->camera_attributes_get_dof_blur_amount(p_camera_attributes);
+	float dof_far_amount = RSG::camera_attributes->camera_attributes_get_dof_blur_far_amount(p_camera_attributes);
+	float dof_near_amount = RSG::camera_attributes->camera_attributes_get_dof_blur_near_amount(p_camera_attributes);
+	if (dof_far_amount < 0.0) {
+		dof_far_amount = dof_amount; // Backwards compatible with the single global amount.
+	}
+	if (dof_near_amount < 0.0) {
+		dof_near_amount = dof_amount;
+	}
+	float bokeh_size_far = dof_far_amount * 64; // Base 64 pixel radius.
+	float bokeh_size_near = dof_near_amount * 64;
 
 	bool use_jitter = RSG::camera_attributes->camera_attributes_get_dof_blur_use_jitter();
 	RS::DOFBokehShape bokeh_shape = RSG::camera_attributes->camera_attributes_get_dof_blur_bokeh_shape();
@@ -114,13 +124,13 @@ void BokehDOF::bokeh_dof_compute(const BokehBuffers &p_buffers, RID p_camera_att
 	bokeh.push_constant.blur_far_begin = dof_far_begin;
 	bokeh.push_constant.blur_far_end = dof_far_begin + dof_far_size; // Only used with non-physically-based.
 	bokeh.push_constant.use_physical_far = dof_far_size < 0.0;
-	bokeh.push_constant.blur_size_far = bokeh_size; // Only used with physically-based.
+	bokeh.push_constant.blur_size_far = bokeh_size_far; // Only used with physically-based.
 
 	bokeh.push_constant.blur_near_active = dof_near;
 	bokeh.push_constant.blur_near_begin = dof_near_begin;
 	bokeh.push_constant.blur_near_end = dof_near_begin - dof_near_size; // Only used with non-physically-based.
 	bokeh.push_constant.use_physical_near = dof_near_size < 0.0;
-	bokeh.push_constant.blur_size_near = bokeh_size; // Only used with physically-based.
+	bokeh.push_constant.blur_size_near = bokeh_size_near; // Only used with physically-based.
 
 	bokeh.push_constant.use_jitter = use_jitter;
 	bokeh.push_constant.jitter_seed = Math::randf() * 1000.0;
@@ -128,7 +138,7 @@ void BokehDOF::bokeh_dof_compute(const BokehBuffers &p_buffers, RID p_camera_att
 	bokeh.push_constant.z_near = p_cam_znear;
 	bokeh.push_constant.z_far = p_cam_zfar;
 	bokeh.push_constant.orthogonal = p_cam_orthogonal;
-	bokeh.push_constant.blur_size = (dof_near_size < 0.0 && dof_far_size < 0.0) ? 32 : bokeh_size; // Cap with physically-based to keep performance reasonable.
+	bokeh.push_constant.blur_size = (dof_near_size < 0.0 && dof_far_size < 0.0) ? 32 : MAX(bokeh_size_near, bokeh_size_far); // Cap with physically-based to keep performance reasonable.
 
 	bokeh.push_constant.second_pass = false;
 	bokeh.push_constant.half_size = false;
@@ -308,7 +318,17 @@ void BokehDOF::bokeh_dof_raster(const BokehBuffers &p_buffers, RID p_camera_attr
 	bool dof_near = RSG::camera_attributes->camera_attributes_get_dof_near_enabled(p_camera_attributes);
 	float dof_near_begin = RSG::camera_attributes->camera_attributes_get_dof_near_distance(p_camera_attributes);
 	float dof_near_size = RSG::camera_attributes->camera_attributes_get_dof_near_transition(p_camera_attributes);
-	float bokeh_size = RSG::camera_attributes->camera_attributes_get_dof_blur_amount(p_camera_attributes) * 64; // Base 64 pixel radius.
+	float dof_amount = RSG::camera_attributes->camera_attributes_get_dof_blur_amount(p_camera_attributes);
+	float dof_far_amount = RSG::camera_attributes->camera_attributes_get_dof_blur_far_amount(p_camera_attributes);
+	float dof_near_amount = RSG::camera_attributes->camera_attributes_get_dof_blur_near_amount(p_camera_attributes);
+	if (dof_far_amount < 0.0) {
+		dof_far_amount = dof_amount; // Backwards compatible with the single global amount.
+	}
+	if (dof_near_amount < 0.0) {
+		dof_near_amount = dof_amount;
+	}
+	float bokeh_size_far = dof_far_amount * 64; // Base 64 pixel radius.
+	float bokeh_size_near = dof_near_amount * 64;
 
 	RS::DOFBokehShape bokeh_shape = RSG::camera_attributes->camera_attributes_get_dof_blur_bokeh_shape();
 	RS::DOFBlurQuality blur_quality = RSG::camera_attributes->camera_attributes_get_dof_blur_quality();
@@ -324,7 +344,9 @@ void BokehDOF::bokeh_dof_raster(const BokehBuffers &p_buffers, RID p_camera_attr
 
 	bokeh.push_constant.second_pass = false;
 	bokeh.push_constant.half_size = false;
-	bokeh.push_constant.blur_size = bokeh_size;
+	bokeh.push_constant.blur_size = MAX(bokeh_size_near, bokeh_size_far);
+	bokeh.push_constant.blur_size_near = bokeh_size_near;
+	bokeh.push_constant.blur_size_far = bokeh_size_far;
 
 	// setup our uniforms
 	RID default_sampler = material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);

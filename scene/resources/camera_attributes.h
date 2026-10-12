@@ -88,6 +88,9 @@ private:
 	float dof_blur_near_transition = 1.0;
 
 	float dof_blur_amount = 0.1;
+	// Per-side amount. -1 = 沿用 dof_blur_amount（向后兼容）。
+	float dof_blur_far_amount = -1.0;
+	float dof_blur_near_amount = -1.0;
 	void _update_dof_blur();
 
 	virtual void _update_auto_exposure() override;
@@ -113,6 +116,10 @@ public:
 	float get_dof_blur_near_transition() const;
 	void set_dof_blur_amount(float p_amount);
 	float get_dof_blur_amount() const;
+	void set_dof_blur_far_amount(float p_amount);
+	float get_dof_blur_far_amount() const;
+	void set_dof_blur_near_amount(float p_amount);
+	float get_dof_blur_near_amount() const;
 
 	void set_auto_exposure_min_sensitivity(float p_min);
 	float get_auto_exposure_min_sensitivity() const;

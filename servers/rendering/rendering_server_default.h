@@ -874,7 +874,7 @@ public:
 	FUNC2(camera_attributes_set_dof_blur_quality, DOFBlurQuality, bool)
 	FUNC1(camera_attributes_set_dof_blur_bokeh_shape, DOFBokehShape)
 
-	FUNC8(camera_attributes_set_dof_blur, RID, bool, float, float, bool, float, float, float)
+	FUNC10(camera_attributes_set_dof_blur, RID, bool, float, float, bool, float, float, float, float, float)
 	FUNC3(camera_attributes_set_exposure, RID, float, float)
 	FUNC6(camera_attributes_set_auto_exposure, RID, bool, float, float, float, float)
 

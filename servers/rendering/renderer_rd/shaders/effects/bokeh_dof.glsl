@@ -47,7 +47,7 @@ float get_blur_size(float depth) {
 			return -(d / (params.blur_near_begin - d)) * params.blur_size_near - DEPTH_GAP; // Near blur is negative.
 		} else {
 			// Non-physically-based.
-			return -(1.0 - smoothstep(params.blur_near_end, params.blur_near_begin, depth)) * params.blur_size - DEPTH_GAP; // Near blur is negative.
+			return -(1.0 - smoothstep(params.blur_near_end, params.blur_near_begin, depth)) * params.blur_size_near - DEPTH_GAP; // Near blur is negative.
 		}
 	}
 
@@ -58,7 +58,7 @@ float get_blur_size(float depth) {
 			return (d / (params.blur_far_begin + d)) * params.blur_size_far + DEPTH_GAP;
 		} else {
 			// Non-physically-based.
-			return smoothstep(params.blur_far_begin, params.blur_far_end, depth) * params.blur_size + DEPTH_GAP;
+			return smoothstep(params.blur_far_begin, params.blur_far_end, depth) * params.blur_size_far + DEPTH_GAP;
 		}
 	}
 

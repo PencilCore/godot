@@ -64,6 +64,8 @@
 			<param index="5" name="near_distance" type="float" />
 			<param index="6" name="near_transition" type="float" />
 			<param index="7" name="amount" type="float" />
+			<param index="8" name="far_amount" type="float" />
+			<param index="9" name="near_amount" type="float" />
 			<description>
 				Sets the parameters to use with the DOF blur effect. These parameters take on the same meaning as their counterparts in [CameraAttributesPractical].
 			</description>
